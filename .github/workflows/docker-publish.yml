@@ -1,0 +1,159 @@
+
+# Arquivo para ser usado no github actions, para compilar e gerar as imagens
+# publicar as imanges no hub.docker.com
+
+name: Continuous Integration with Github
+
+on: 
+  push:
+    branches:
+    - master
+    
+env:
+  DB_NAME: ${{ vars.DB_NAME }}
+  DB_HOST: ${{ vars.DB_HOST }}
+  DB_PORT: ${{ vars.DB_PORT }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  NEXUS_USER: ${{ secrets.NEXUS_USER }}
+  NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+  COMPONENT_NAME_DIR: 'comp-indicador'
+  COMPONENT_NAME_DOCKER: 'comp_indicador'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Set UTF-8 locale
+        run: export LANG=en_US.UTF-8
+            
+      - name: Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql version: 12.1
+          postgresql db:  $DB_NAME
+          postgresql user: $DB_USERNAME
+          postgresql password: $DB_PASSWORD
+        env:
+          INPUT_POSTGRESQL_DB: $DB_NAME
+          
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu'
+          cache: 'maven'
+    
+      - name: Define User Maven
+        working-directory: ./
+        run:  |
+            echo $(mvn -version)
+            echo "........................................"
+            echo $(java -version)
+            echo "........................................"
+            echo JAVA_HOME: $JAVA_HOME
+            
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: /opt/maven-repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+           ${{ runner.os }}-maven- 
+
+      - name: Get project version
+        id: project_version
+        run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+    
+      
+      - name: Docker Hub Image Check
+        id: docker_hub_image_check
+        run: |
+          VERSION=${{ steps.project_version.outputs.VERSION }}
+          IMAGE_NAME=${{ secrets.DOCKER_USER_NAME }}/$COMPONENT_NAME_DOCKER:$VERSION
+          docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_KEY }}
+          if docker pull $IMAGE_NAME > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+                  
+      - name: Docker Image Already Exists
+        if: env.exists == 'true'
+        run: |
+          echo "Docker image already exists on Docker Hub."
+          echo "version: ${{ steps.project_version.outputs.VERSION }}"
+          exit 1
+          
+      - name: Build Indicador Jar
+        if: env.exists == 'false'
+        working-directory: ./
+        run: |
+          echo $(pwd)
+          echo "........................................"
+          echo "........................................"
+          echo $(ls /home/runner/work/$COMPONENT_NAME_DIR/$COMPONENT_NAME_DIR)
+          echo $(cat /usr/share/apache-maven-3.8.8/conf/settings.xml)
+          echo "........................................"
+          echo "........................................"
+          echo $(cat /home/runner/.m2/settings.xml)
+          echo "........................................"
+          echo "........................................"
+          echo $(ls /usr/share/apache-maven-3.8.8)
+          echo "........................................"
+          echo "........................................"
+          echo $(ls /usr/share/apache-maven-3.8.8/conf/)
+          echo "........................................"
+          echo "........................................"
+          cp .github/workflows/settings.xml  /usr/share/apache-maven-3.8.8/conf/settings.xml
+          cp .github/workflows/settings-security.xml  /home/runner/.m2/settings-security.xml
+          echo "........................................"
+          echo "........................................"
+          echo $(cat /usr/share/apache-maven-3.8.8/conf/settings.xml)
+          echo "........................................"
+          echo "........................................"
+          echo $(cat /home/runner/.m2/settings-security.xml)
+          echo "........................................"
+          echo "........................................"
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -Dmaven.test.skip=true -DactTransitively=false -DreResolve=false clean install  -Phomolog
+          echo "........................................"
+          echo "........................................"
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DDB_HOST=$DB_HOST -DDB_PORT=$DB_PORT -DDB_NAME=$DB_NAME -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -DactTransitively=false -DreResolve=false liquibase:update -Phomolog
+          echo "........................................"
+          echo "........................................"
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DactTransitively=false -DreResolve=false test -Phomolog
+          echo "........................................"
+          echo "........................................"
+          echo $(du –h /opt)
+        
+      - name: Docker Compose Build
+        if: env.exists == 'false'
+        working-directory: ./
+        run: | 
+          echo $(pwd)
+          echo $(java --version)
+          echo $(uname -a)
+          echo "version: ${{ steps.project_version.outputs.VERSION }}"
+          echo "Logando..."
+          docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_KEY }}
+          docker build --build-arg JAR_FILE_PATH=target/$COMPONENT_NAME_DOCKER-${{steps.project_version.outputs.VERSION}}.jar --build-arg VERSION=${{steps.project_version.outputs.VERSION}} -t $COMPONENT_NAME_DOCKER:${{steps.project_version.outputs.VERSION}} .
+               
+      - name: Docker image list
+        run: docker images
+        
+      - name: Tag to Docker Registry
+        if: env.exists == 'false'
+        run: |
+          docker image tag  $COMPONENT_NAME_DOCKER:${{steps.project_version.outputs.VERSION}} ${{secrets.DOCKER_USER_NAME}}/$COMPONENT_NAME_DOCKER:${{steps.project_version.outputs.VERSION}}
+          docker image tag  $COMPONENT_NAME_DOCKER:${{steps.project_version.outputs.VERSION}} ${{secrets.DOCKER_USER_NAME}}/$COMPONENT_NAME_DOCKER:latest
+          
+      - name: Push to Docker Hub Container Registry
+        if: env.exists == 'false'
+        run: | 
+          docker image ls
+          echo "Logando..."
+          docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_KEY }}
+          echo "........................................"
+          docker push ${{ secrets.DOCKER_USER_NAME }}/$COMPONENT_NAME_DOCKER:${{steps.project_version.outputs.VERSION}}
+          docker push ${{ secrets.DOCKER_USER_NAME }}/$COMPONENT_NAME_DOCKER:latest

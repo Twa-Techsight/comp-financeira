@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+   <interactiveMode>false</interactiveMode>
+   <offline>false</offline>
+   <localRepository>/opt/maven-repository</localRepository>
+   <pluginGroups />
+   <proxies />
+   <servers>
+      <server>
+         <id>nexus</id>
+         <username>${NEXUS_USER}</username>
+         <password>${NEXUS_PASSWORD}</password>
+      </server>
+      <server>
+         <id>releases</id>
+         <username>${NEXUS_USER}</username>
+         <password>${NEXUS_PASSWORD}</password>
+      </server>
+      <server>
+         <id>central</id>
+         <username>${NEXUS_USER}</username>
+         <password>${NEXUS_PASSWORD}</password>
+      </server>
+   </servers>
+   <mirrors>
+      <mirror>
+         <id>nexus</id>
+         <url>https://swo.ddns.net/nexus/repository/public</url>
+         <mirrorOf>*,!public</mirrorOf>
+      </mirror>
+   </mirrors>
+   <profiles>
+      <profile>
+         <id>central</id>
+         <repositories>
+            <repository>
+               <id>central</id>
+               <url>https://swo.ddns.net/nexus/repository/public</url>
+               <releases>
+                  <enabled>true</enabled>
+               </releases>
+               <snapshots>
+                  <enabled>true</enabled>
+               </snapshots>
+            </repository>
+         </repositories>
+         <pluginRepositories>
+            <pluginRepository>
+               <id>central</id>
+               <url>https://swo.ddns.net/nexus/repository/public</url>
+               <releases>
+                  <enabled>true</enabled>
+               </releases>
+               <snapshots>
+                  <enabled>true</enabled>
+               </snapshots>
+            </pluginRepository>
+         </pluginRepositories>
+      </profile>
+   </profiles>
+   <activeProfiles>
+      <activeProfile>central</activeProfile>
+   </activeProfiles>
+</settings>

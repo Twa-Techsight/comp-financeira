@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+	<property name="logicalFile_1"
+		value="versions/1.0.0.0/financeira.xml" />
+
+	<changeSet logicalFilePath="${logicalFile_1}"
+		id="tag-financeira" author="edson" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="false">
+		<tagDatabase tag="tag-financeira" />
+	</changeSet>
+
+	<changeSet logicalFilePath="${logicalFile_1}"
+		id="tag-financeira-update" author="edson" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="false">
+		<comment>update comments create tag-financeira</comment>
+		<sql> Update databasechangelog set comments='ponto de rolback
+			tag-financeira'
+			where id='tag-financeira';
+		</sql>
+		<rollback />
+	</changeSet>
+
+
+
+	<changeSet logicalFilePath="${logicalFile_1}" author="edson"
+		id="tag-financeira-create-table" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="false">
+
+		<createSequence sequenceName="financeira_id_seq"
+			cycle="false" minValue="1" maxValue="9223372036854775807"
+			startValue="1" incrementBy="1" />
+
+		<createTable tableName="financeira">
+			<column name="id" type="bigint"> <constraints nullable="false" primaryKey= "true" primaryKeyName= "financeira_pk"/> </column>
+			<column name="empresa_id" type="bigint"> <constraints nullable="false"/> </column>
+			<column name="nome" type="varchar(120)"/>
+			<column name="atendente" type="varchar(30)"/>
+			<column name="telefone" type="varchar(14)"/>
+			<column name="site" type="varchar(60)"/>
+			<column name="usuario" type="varchar(30)"/>
+			<column name="senha" type="varchar(14)"/>
+			<column name="prazos_carencia" type="varchar(128)"/>
+			<column name="finaceira_padrao" type="bool"/>
+			<column name="sem_juros" type="bool"/>
+			<column name="inativo" type="bool"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="financeira" cascadeConstraints="true" />
+			<dropSequence sequenceName="financeira_id_seq" />
+		</rollback>
+	</changeSet>
+
+	<changeSet logicalFilePath="${logicalFile_1}" author="edson"
+		id="tag-financeira-alter-sequence" dbms="postgresql" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="true">
+		<sql>
+			alter sequence public.financeira_id_seq restart with 1484;
+		</sql>
+		<rollback>
+		</rollback>
+	</changeSet>
+
+	<changeSet logicalFilePath="${logicalFile_1}" author="edson"
+		id="tag-tabela_juros-create-table" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="false">
+
+		<createSequence sequenceName="tabela_juros_id_seq"
+			cycle="false" minValue="1" maxValue="9223372036854775807"
+			startValue="1" incrementBy="1" />
+
+		<createTable tableName="tabela_juros">
+			<column name="id" type="bigint"> <constraints nullable="false" primaryKey= "true" primaryKeyName= "tabela_juros_pk"/> </column>
+			<column name="empresa_id" type="bigint"> <constraints nullable="false"/> </column>
+			<column name="financeira_id" type="bigint"> <constraints nullable="false"/> </column>
+			<column name="nome" type="varchar(40)"/>
+			<column name="data_vigor" type="timestamp"/>
+			<column name="valor_tac" type="numeric(172,2)"/>
+			<column name="taxa_juro" type="numeric(172,2)"/>
+			<column name="parcela" type="int"/>
+			<column name="minparc" type="int"/>
+			<column name="maxparc" type="int"/>
+			<column name="prazo_1" type="numeric(17,2)"/>
+			<column name="prazo_2" type="numeric(17,2)"/>
+			<column name="prazo_3" type="numeric(17,2)"/>
+			<column name="prazo_4" type="numeric(17,2)"/>
+			<column name="prazo_5" type="numeric(17,2)"/>
+			<column name="prazo_6" type="numeric(17,2)"/>
+			<column name="prazo_7" type="numeric(17,2)"/>
+			<column name="prazo_8" type="numeric(17,2)"/>
+			<column name="prazo_9" type="numeric(17,2)"/>
+			<column name="prazo_10" type="numeric(17,2)"/>
+			<column name="prazo_11" type="numeric(17,2)"/>
+			<column name="prazo_12" type="numeric(17,2)"/>
+			<column name="comentrada" type="bool"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="tabela_juros" cascadeConstraints="true" />
+			<dropSequence sequenceName="tabela_juros_id_seq" />
+		</rollback>
+	</changeSet>
+
+	<changeSet logicalFilePath="${logicalFile_1}" author="edson"
+		id="tag-tabela_juros-alter-sequence" dbms="postgresql" runInTransaction="true"
+		context="local, test, homolog, production" runOnChange="true">
+		<sql>
+			alter sequence public.tabela_juros_id_seq restart with 14698;
+		</sql>
+		<rollback>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

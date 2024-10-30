@@ -1,0 +1,164 @@
+
+# comp-financeira
+debug: true
+
+DB_HOST: localhost
+DB_PORT: 5432
+DB_NAME: twa_financeira
+DB_USERNAME: financeira_user
+DB_PASSWORD: TFntwC1563
+
+server:
+  port: 10070
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
+############################### Configurações do eureka ################
+eureka:
+  client:
+    service-url:
+      registerWithEureka: true
+      fetchRegistry: true
+      initial-instance-info-replication-interval-seconds: 5    
+    serviceUrl:
+      defaultZone: ${eureka.server.protocol}://${eureka.server.hostname}:${eureka.server.port}/${eureka.server.context-path}/eureka/
+  instance:
+    lease-renewal-interval-in-seconds: 10 
+    registry-fetch-iInterval-seconds: 20
+    lease-expiration-duration-in-seconds: 10
+  server:
+    hostname: localhost
+    protocol: http
+    context-path: naming-server
+    port: 8600
+############################### Fim Configurações do eureka ################
+
+############################### Configurações propriedades do spring #######
+security:
+  oauth2:
+    resource:
+      id: bcrypt
+
+spring:
+  application:
+    name: comp-financeira
+    version: 1
+  timezone: America/Sao_Paulo
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true      
+  jackson:
+    default-property-inclusion: NON_EMPTY
+    timezone: America/Sao_Paulo
+    serialization:
+      fail-on-empty-beans: false
+      indent_output: true
+  liquibase:
+    contexts: local, homolog, production
+    change-log: classpath:changelogs/db.changelog-master.xml
+    url: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8"
+    user: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useTimezone=true&serverTimezone=UTC&characterEncoding=UTF-8"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+  jwt:
+    secret: ccceee7373636f70657374686174666f6c6c6f77746865323338374c4c6772616e74656435617574686f726974793332333233326e616d696e67303030304f4f636f6e767373636f70657374686174666f6c6c6f77746865323338374c4c6772616e74656435617574686f72697479333233323332cccffff33323332cccfff
+    expiration: '720'
+    refresh:
+      expiration: '30'
+  zipkin:
+    base-url: http://localhost:9411/
+  main:
+    web-application-type: servlet
+  gateway:
+    discovery:
+      locator:
+        enabled: true
+        lower-case-service-id: true
+  cache:
+    specs:
+      short-cache:
+        expire-after: WRITE
+        timeout: 30s
+        max-size: 1000
+      big-cache:
+        expire-after: WRITE
+        timeout: 2h
+        max-size: 1000
+  security:
+    keys:
+      value_1: ${KEY_01:#{12}}
+      value_2: ${KEY_02:#{-25}}
+      value_3: ${KEY_03:#{-5}}
+      value_4: ${KEY_04:#{-45}}
+      value_5: ${KEY_05:#{19}}
+      value_6: ${KEY_06:#{67}}
+      value_7: ${KEY_07:#{3}}
+      value_8: ${KEY_08:#{100}}
+      value_9: ${KEY_09:#{75}}
+      value_0: ${KEY_00:#{'ii90nD13kj58YkILliLx3890FiIL6lX1'}}
+    urls: /swagger-ui, /swagger-resources, /v3/api-docs
+    origens: http://localhost:8080, http://twa.com, http://45.185.208.179:8080, http://45.185.208.179:8700
+    metodos: GET, POST, PUT, DELETE, OPTIONS, PATCH, HEADER
+    cabecalhos: Access-Control-Allow-Origin, urlcode, Access-Control-Allow-Headers, content-type, client, client_token, authorization, header        
+########################### Fim Configurações propriedades do spring #######
+
+########################### Tratamento de logs #############################                  
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-methods: GET, POST, DELETE, PUT, PATH, OPTIONS
+        allowed-origins: '*'
+  tracing:
+    sampling:
+      probability: 1.0
+  datadog:
+    metrics:
+      export:
+        apiKey: 'comp-financeira'
+
+logging:
+  config: 'classpath:logback-spring.xml'
+  path: 'C:/javas/logs'
+  profile: local
+  level:
+    root: INFO
+    logger: INFO
+    historysDays: WARN 
+    minutes: WARN 
+    com: 
+      twa: INFO
+      netflix: INFO
+    org: 
+      apache:
+        hc: WARN
+      springframework:
+        web: INFO      
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+########################### Fim Tratamento de logs ###########################
+
+########################### Documentação Swagger #############################
+springdoc:
+  api-docs:
+    enabled: true
+    path: '/v3/api-docs'
+  swagger-ui:
+    enabled: true
+    path: /index.html
+    disable-swagger-default-url: true
+    operationsSorter: method # alpha
+  webjars:
+    prefix: /docs
+  show-actuator: false    
+######################## fim Documentação Swagger ############################

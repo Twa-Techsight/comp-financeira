@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property resource="application.yml" />
+	<springProperty name="NAME"	source="spring.application.name" />
+	<springProperty name="LOGS" source="logging.path" />
+	<springProperty name="levelRoot" source="logging.level.root" />
+	<springProperty name="levelLogger" source="logging.level.logger" />
+	<springProperty name="levelHistorysDays" source="logging.level.historysDays" />
+	<springProperty name="levelMinutes"	source="logging.level.minutes" />
+
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<Pattern>${NAME} - %-5level{12} - %d{dd/MM/yyy HH:mm:ss:SSS} -%-70(%logger{70}.%M\(%line\)) - %msg %n </Pattern>
+		</encoder>
+	</appender>
+	<appender name="HISTORYS_DAYS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<File>${LOGS}/log-servicos.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOGS}/rest.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<maxHistory>90</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<charset>UTF-8</charset>
+			<Pattern>name=${NAME} - type=%-5level{12} - data=%d{dd/MM/yyyy HH:mm:ss:SSS} - %-70(%logger{70}.%M\(%line\)) - %msg %n </Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${levelHistorysDays}</level>
+		</filter>
+	</appender>
+
+	<appender name="MINUTES"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<rollingPolicy	class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOGS}/minutes/${NAME}.%d{yyyy-MM-dd_HH-mm}.log</FileNamePattern>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<charset>UTF-8</charset>
+			<Pattern>name=${NAME} - type=%-5level{12} - data=%d{dd/MM/yyyy HH:mm:ss:SSS} - %-70(%logger{70}.%M\(%line\)) - %msg %n </Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${levelMinutes}</level>
+		</filter>
+	</appender>
+	<!-- log para analisar o comportamento das transações geridas pelo hibernate -->
+	<!-- <logger level="DEBUG" name="org.hibernate.engine.transaction.internal" 
+		/> <logger level="DEBUG" name="org.springframework.orm.hibernate5" /> -->
+	<logger level="DEBUG" name="org.springframework" />
+
+	<logger level="DEBUG" name="com" />
+
+	<!-- escrevendo nos log -->
+	<logger additivity="false" name="DEBUG" level="${levelLogger}" >
+		<!-- deve ser usado esse tres appenders -->
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="HISTORYS_DAYS" />
+		<appender-ref ref="MINUTES" />
+	</logger>
+
+	<!-- fazendo as saidas log -->
+	<root level="${levelRoot}">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="HISTORYS_DAYS" />
+		<appender-ref ref="MINUTES" />
+	</root>
+
+</configuration>
