@@ -230,6 +230,7 @@
 			INSERT INTO FINANCEIRA (id,empresa_id,nome,atendente,telefone,site,usuario,senha,prazos_carencia,finaceira_padrao,inativo) VALUES (1481,211,'CARTÃO DE CREDITO','LOJA','(61)99999-9999',null,null,null,'05|10|15|20|25|30|35|40|45|60|90|120',false,false);
 			INSERT INTO FINANCEIRA (id,empresa_id,nome,atendente,telefone,site,usuario,senha,prazos_carencia,finaceira_padrao,inativo) VALUES (1482,211,'SANTANDER','LOJA','(61)99999-9999',null,null,null,'05|10|15|20|25|30|35|40|45|60|90|120',true,false);
 			INSERT INTO FINANCEIRA (id,empresa_id,nome,atendente,telefone,site,usuario,senha,prazos_carencia,finaceira_padrao,inativo) VALUES (1483,211,'BRADESCO','LOJA','(61)99999-9999',null,null,null,'05|10|15|20|25|30|35|40|45|60|90|120',false,false);
+			update financeira set sem_juros=false where sem_juros is null;
 		</sql>
 		<rollback>
 			delete from financeira;

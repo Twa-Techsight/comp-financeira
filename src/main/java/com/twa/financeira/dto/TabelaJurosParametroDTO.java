@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Transactional(rollbackFor = Exception.class)
-public class FinanceiraParametroDTO extends TecFilterParameter {
+public class TabelaJurosParametroDTO extends TecFilterParameter {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,14 +22,8 @@ public class FinanceiraParametroDTO extends TecFilterParameter {
 
     private Long empresaId;
 
+    private Long financeiraId;
+
     private String nome;
-
-    private String atendente;
-
-    private Boolean finaceiraPadrao;
-
-    private Boolean semJuros;
-
-    private Boolean inativo;
     
 }

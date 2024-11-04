@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sys.persistence.model.TecObjectGenericTwa;
 
 import lombok.Getter;
@@ -28,7 +27,6 @@ public class Financeira extends TecObjectGenericTwa<Financeira> {
     @SequenceGenerator(name = "tabelaJuros", sequenceName = "tabela_juros_id_seq", allocationSize = 1)
     private Long id;
     
-    @JsonProperty(value = "empresa_id")
     @Column(name = "empresa_id")
     private Long empresaId;
     

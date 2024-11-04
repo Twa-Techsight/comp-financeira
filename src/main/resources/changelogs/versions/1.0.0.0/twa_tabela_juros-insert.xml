@@ -5452,7 +5452,7 @@
 		</sql>
 		
 		<rollback>
-			delete from tabela_juros_empresa;
+			delete from tabela_juros;
 		</rollback>
 	</changeSet>
 	

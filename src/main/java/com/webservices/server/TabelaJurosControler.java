@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.SortOrder;
-
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.persistence.commun.component.SysCriterion;
 import com.persistence.model.SysPayload;
+import com.twa.financeira.dto.TabelaJurosParametroDTO;
 import com.twa.financeira.dto.TabelaJurosRequestDTO;
 import com.twa.financeira.dto.TabelaJurosResponseDTO;
 import com.twa.financeira.dto.TabelaJurosUpdateDTO;
+import com.twa.financeira.dto.TabelaJurosViewResponseDTO;
 import com.twa.financeira.entity.TabelaJuros;
+import com.twa.financeira.entity.view.TabelaJurosView;
+import com.twa.financeira.service.TabelaJurosAsyncService;
 import com.twa.financeira.service.TabelaJurosService;
 import com.webservices.TecControllerRest;
 import com.webservices.resouces.TabelaJurosResource;
@@ -39,67 +39,60 @@ public class TabelaJurosControler extends TecControllerRest implements TabelaJur
 
     private final TabelaJurosService service;
 
+    private final TabelaJurosAsyncService tabelaJurosAsyncService;
+    
     private final ObjectMapper mapper;
 
-    public TabelaJurosControler(@Qualifier("tabelaJurosServiceImpl") TabelaJurosService service, ObjectMapper mapper) {
-        this.service = service;
-        this.mapper = mapper;
+    public TabelaJurosControler(@Qualifier("tabelaJurosServiceImpl") TabelaJurosService service, 
+	    			ObjectMapper mapper,
+	    			@Qualifier("tabelaJurosAsyncServiceImpl") TabelaJurosAsyncService tabelaJurosAsyncService) {
+	this.service = service;
+	this.mapper = mapper;
+	this.tabelaJurosAsyncService = tabelaJurosAsyncService;
     }
-
 
     @PostConstruct
     public void init() {
         log.info("created TabelaJurosControler..");
     }
 
-    public ResponseEntity<SysPayload<TabelaJurosResponseDTO>> list(Long idEmpresa, Integer page, Integer size) {
-        final Map<String, SysCriterion> fields = new HashMap<>();
-        fields.put("id", new SysCriterion("id", SortOrder.DESCENDING));
-        fields.put("empresaId", new SysCriterion("empresaId", Restrictions.eq("empresaId", idEmpresa)));
-
-        var tabelaJuross = this.service.findAll(TabelaJuros.class, fields, page, size);
-        var rows = this.service.count(TabelaJuros.class, fields);
-        var payload = converterTabelaJuroses(tabelaJuross, rows);
-
-        return new ResponseEntity<>(payload, HttpStatus.OK);
-    }
-
     @Override
     public ResponseEntity<SysPayload<TabelaJurosResponseDTO>> save(TabelaJurosRequestDTO dto, HttpServletResponse response) {
-        var TabelaJuros = this.service.save(getObjectMapper().convertValue(dto, TabelaJuros.class));
+        var tabelaJuros = this.service.save(getObjectMapper().convertValue(dto, TabelaJuros.class));
 
-        return new ResponseEntity<>(converterTabelaJuros(TabelaJuros), HttpStatus.OK);
+        return new ResponseEntity<>(converterTabelaJuros(tabelaJuros), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<SysPayload<TabelaJurosResponseDTO>> edit(Long id, TabelaJurosUpdateDTO dto) {
+    public ResponseEntity<SysPayload<TabelaJurosResponseDTO>> update(Long id, TabelaJurosUpdateDTO dto) {
         var tabelaJuros = this.service.update(id, getObjectMapper().convertValue(dto, TabelaJuros.class));
 
         return new ResponseEntity<>(converterTabelaJuros(tabelaJuros), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<SysPayload<TabelaJurosResponseDTO>> delete(Long id) {
-        final Map<String, SysCriterion> fields = new HashMap<>();
-        fields.put("cargo", new SysCriterion("cargo", FetchMode.JOIN));
+    public ResponseEntity<SysPayload<TabelaJurosViewResponseDTO>> listByParam(Long financeiraId, Integer page, Integer size, String authorization, TabelaJurosParametroDTO parametersConsult) {
+	
+	var tabelaJuros = tabelaJurosAsyncService.findPagePayload(TabelaJurosView.class, financeiraId, parametersConsult, authorization, page, size);
+	
+	var payload = converterTabelasJuros(tabelaJuros.getCollection(), tabelaJuros.getSize());
 
-        var tabelaJuros = this.service.deleteById(TabelaJuros.class, id, fields);
-
-        return new ResponseEntity<>(converterTabelaJuros(tabelaJuros), HttpStatus.OK);
-    }
-
-    private SysPayload<TabelaJurosResponseDTO> converterTabelaJuroses(List<TabelaJuros> tabelaJuross, Integer rows) {
+	
+	return new ResponseEntity<>(payload, HttpStatus.OK);
+    }    
+        
+    private SysPayload<TabelaJurosViewResponseDTO> converterTabelasJuros(List<TabelaJurosView> tabelaJuros, Integer rows) {
         var payload = newPayload();
         payload.setSize(rows);
 
-        var collection = tabelaJuross.stream().map(tabelaJuros -> getObjectMapper().convertValue(tabelaJuros, TabelaJurosResponseDTO.class)).collect(Collectors.toList());
+        var collection = tabelaJuros.stream().map(tabelaJuro -> getObjectMapper().convertValue(tabelaJuro, TabelaJurosViewResponseDTO.class)).collect(Collectors.toList());
         payload.setCollection(collection);
 
         return payload;
     }
 
     private SysPayload<TabelaJurosResponseDTO> converterTabelaJuros(TabelaJuros tabelaJuros) {
-        var payload = newPayload();
+        var payload = newPayloadFull();
 
         var dto = getObjectMapper().convertValue(tabelaJuros, TabelaJurosResponseDTO.class);
         payload.setData(dto);
@@ -128,7 +121,12 @@ public class TabelaJurosControler extends TecControllerRest implements TabelaJur
 
     @SuppressWarnings("unchecked")
     @Override
-    public SysPayload<TabelaJurosResponseDTO> newPayload() {
-        return new SysPayload<TabelaJurosResponseDTO>();
+    public SysPayload<TabelaJurosViewResponseDTO> newPayload() {
+        return new SysPayload<TabelaJurosViewResponseDTO>();
     }
+    
+    public SysPayload<TabelaJurosResponseDTO> newPayloadFull() {
+	return new SysPayload<TabelaJurosResponseDTO>();
+    }
+    
 }

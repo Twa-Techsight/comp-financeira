@@ -33,20 +33,17 @@ public interface FinanceiraResource {
     
 /* ------------------------------------------------------------------------------------------------------------------------------------*/        
     
-    @Operation(summary = "Pegar financeira", responses = {
-		@ApiResponse(responseCode = "200", description = "Pegar financeira", 
-				content = @Content(mediaType = "application/json", 
-				schemaProperties = {  @SchemaProperty(name = "object", 
-					schema = @Schema(implementation = FinanceiraResponseDTO.class ))}
-			))}, 
-			parameters = {
-				@Parameter(hidden = true,  name = "client", required = true, in = ParameterIn.HEADER), 
-				@Parameter(hidden = true, name = "client_token", required = true, in = ParameterIn.HEADER),
-				@Parameter(hidden = true, name = "authorization", required = true, in = ParameterIn.HEADER),
-		})
-    @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    	@Operation(summary = "Pegar financeira", responses = {
+	@ApiResponse(responseCode = "200", description = "Pegar financeira",content = 
+	@Content(mediaType = "application/json",schemaProperties = {  
+	@SchemaProperty(name = "object",schema = 
+	@Schema(implementation = FinanceiraResponseDTO.class ))}))},parameters = {
+	@Parameter(hidden = true,  name = "client", required = true, in = ParameterIn.HEADER), 
+	@Parameter(hidden = true, name = "client_token", required = true, in = ParameterIn.HEADER),
+	@Parameter(hidden = true, name = "authorization", required = true, in = ParameterIn.HEADER),})
+    	@GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SysPayload<FinanceiraResponseDTO>> get(
-            @PathVariable(value = "id", required = true) Long id);
+        @PathVariable(value = "id", required = true) Long id);
 
 /* ------------------------------------------------------------------------------------------------------------------------------------*/
     
@@ -100,9 +97,9 @@ public interface FinanceiraResource {
     @Parameters({@Parameter(hidden = true, name = "authorization", required = true),
     @Parameter(hidden = true, name = "client", required = true),
     @Parameter(hidden = true, name = "client_token", required = true)})
-    @PutMapping(value = "/{grupoEmpresaId}/{page}/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{empresaId}/{page}/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
 public ResponseEntity<SysPayload<FinanceiraResponseDTO>> listByParam(
-    @PathVariable(value = "grupoEmpresaId", required = true) Long grupoEmpresaId,
+    @PathVariable(value = "empresaId", required = true) Long empresaId,
     @PathVariable(value = "page", required = true) Integer page,
     @PathVariable(value = "size", required = true) Integer size, 
     @RequestHeader("authorization") String authorization,

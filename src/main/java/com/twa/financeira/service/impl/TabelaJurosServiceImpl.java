@@ -3,12 +3,16 @@ package com.twa.financeira.service.impl;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.swing.SortOrder;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.persistence.TecFilterBean;
 import com.persistence.commun.component.SysCriterion;
 import com.persistence.commun.service.component.SysGenericService;
+import com.twa.financeira.dto.TabelaJurosParametroDTO;
 import com.twa.financeira.repository.TabelaJurosRepositorio;
 import com.twa.financeira.service.TabelaJurosService;
 
@@ -39,5 +43,17 @@ public class TabelaJurosServiceImpl extends SysGenericService implements TabelaJ
     @Override
     public <E extends Serializable> E deleteById(final Class<E> clazz, final Long entityId, final Map<String, SysCriterion> conditions) throws RuntimeException {
         return this.getDao().deleteById(clazz, entityId, conditions);
+    }
+
+    @Override
+    public Map<String, SysCriterion> definindoParametros(Long financeiraId, TabelaJurosParametroDTO parametersConsult) {
+	var build = new TecFilterBean();
+	if("ATIVO".equals(parametersConsult.getSituacao())) {
+	    parametersConsult.setSituacao("INATIVO");
+	}else if("INATIVO".equals(parametersConsult.getSituacao())) {
+	    parametersConsult.setSituacao("ATIVO");
+	}
+	final Map<String, SysCriterion> fields = build.buildParams(SortOrder.ASCENDING, financeiraId, parametersConsult);
+	return fields;
     }
 }

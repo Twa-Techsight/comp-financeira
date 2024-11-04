@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sys.persistence.model.TecObjectGenericTwa;
@@ -36,13 +38,13 @@ public class TabelaJuros extends TecObjectGenericTwa<TabelaJuros> {
     private Long empresaId;
 
     @Column(name = "financeira_id", nullable = false)
-    @JsonProperty(value = "financeiraId")
     private Long financeiraId;
 
     @Column(length = 70, nullable = false)
     private String nome;
     
     @Column(name = "data_vigor")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataVigor;
 
     @Column(name = "valor_tac")
