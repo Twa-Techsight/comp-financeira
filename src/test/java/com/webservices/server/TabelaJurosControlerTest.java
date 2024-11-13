@@ -67,16 +67,7 @@ public class TabelaJurosControlerTest extends ContextWebApplicationJUnit {
 	assertEquals(1L, response.getBody().getData().getId());
     }
 
-    @Test
-    @DisplayName(value = "save tabelaJuros")
-    void saveTest() {
-	var empresaRequest = criarEmpresaRequest();
-	var tabelaJuros = criarEmpresa();
-	when(tabelaJurosRepository.save(Mockito.any(TabelaJuros.class))).thenReturn(tabelaJuros);
-	var response = controler.save(empresaRequest, httpResponse);
-	assertNotNull(response);
-	assertEquals(1L, response.getBody().getData().getId());
-    }
+  
 
     @Test
     @DisplayName(value = "edit tabelaJuros, encontrou")

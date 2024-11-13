@@ -1,5 +1,7 @@
 package com.twa.financeira.dto;
 
+import java.util.List;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import com.persistence.model.TecFilterParameter;
@@ -24,6 +26,38 @@ public class TabelaJurosParametroDTO extends TecFilterParameter {
 
     private Long financeiraId;
 
+    private Long tabelaId;
+
     private String nome;
+    
+    private Integer parcelaMinima;
+    
+    private Integer parcelaMaxima;
+
+    private Boolean onlyDay1;
+    
+    private Boolean onlyDay2;
+    
+    private Boolean onlyDay3;
+        
+    private Boolean onlyDay4;
+
+    private Boolean onlyDay5;
+    
+    private Boolean onlyDay6;
+    
+    private Boolean onlyDay7;
+    
+    private Boolean onlyDay8;
+    
+    private Boolean onlyDay9;
+    
+    private Boolean onlyDay10;
+    
+    private Boolean onlyDay11;
+    
+    private Boolean onlyDay12;
+    
+    private List<ItensTabelaJurosDTO> itens;
     
 }

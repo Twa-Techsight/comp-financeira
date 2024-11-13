@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.persistence.SysInterfaceGenericAsync;
 import com.persistence.model.SysPayload;
 import com.twa.financeira.dto.TabelaJurosParametroDTO;
+import com.twa.financeira.dto.TabelaJurosResponseDTO;
 import com.twa.financeira.entity.view.TabelaJurosView;
 public interface TabelaJurosAsyncService extends SysInterfaceGenericAsync {
 
@@ -12,5 +13,10 @@ public interface TabelaJurosAsyncService extends SysInterfaceGenericAsync {
 
     public SysPayload<TabelaJurosView> findPagePayload(Class<TabelaJurosView> clazz, Long financeiraId,TabelaJurosParametroDTO parametersConsult, String authorization, Integer page, Integer size);
 
-    
+    public TabelaJurosResponseDTO processaCoeficientes(TabelaJurosParametroDTO parametros);
+
+    public TabelaJurosResponseDTO getByTabelaId(Long empresaId, Long tabelaId);
+
+    public Boolean validaNome(Long empresaId, Long Financeiraid, String nomeTabela);
+
 }

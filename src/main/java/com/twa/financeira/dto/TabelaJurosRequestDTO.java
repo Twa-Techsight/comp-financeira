@@ -3,6 +3,7 @@ package com.twa.financeira.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,9 +18,13 @@ public class TabelaJurosRequestDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long id;
+    
     private Long empresaId;
 
     private Long financeiraId;
+
+    private Long tabelaId;
 
     private String nome;
     
@@ -29,36 +34,13 @@ public class TabelaJurosRequestDTO implements Serializable {
 
     private BigDecimal taxaJuro;
 
-    private Integer parcela;
-
     private Integer minparc;
     
     private Integer maxparc;
     
-    private BigDecimal prazo1;
+    private List<ItensTabelaJurosDTO> itens;
     
-    private BigDecimal prazo2;
-    
-    private BigDecimal prazo3;
-    
-    private BigDecimal prazo4;
-    
-    private BigDecimal prazo5;
-    
-    private BigDecimal prazo6;
-    
-    private BigDecimal prazo7;
-    
-    private BigDecimal prazo8;
-    
-    private BigDecimal prazo9;
-    
-    private BigDecimal prazo10;
-    
-    private BigDecimal prazo11;
-    
-    private BigDecimal prazo12;
-    
-    private Boolean comentrada;
+    private Boolean edit=false;
+
     
 }

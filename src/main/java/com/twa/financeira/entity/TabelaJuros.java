@@ -33,6 +33,10 @@ public class TabelaJuros extends TecObjectGenericTwa<TabelaJuros> {
     @SequenceGenerator(name = "tabelaJuros", sequenceName = "tabela_juros_id_seq", allocationSize = 1)
     private Long id;
 
+    @Column(name = "tabela_id", nullable = false)
+    @JsonProperty(value = "tabelaId")
+    private Long tabelaId;
+
     @Column(name = "empresa_id", nullable = false)
     @JsonProperty(value = "empresaId")
     private Long empresaId;

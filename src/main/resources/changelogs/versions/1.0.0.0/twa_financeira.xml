@@ -85,9 +85,15 @@
 				<constraints nullable="false" primaryKey="true"
 					primaryKeyName="tabela_juros_pk" />
 			</column>
+			
+			<column name="tabela_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			
 			<column name="empresa_id" type="bigint">
 				<constraints nullable="false" />
 			</column>
+			
 			<column name="financeira_id" type="bigint">
 				<constraints nullable="false" />
 			</column>
@@ -124,7 +130,7 @@
 		runInTransaction="true" context="local, test, homolog, production"
 		runOnChange="true">
 		<sql>
-			alter sequence public.tabela_juros_id_seq restart with 14698;
+			alter sequence public.tabela_juros_id_seq restart with 16903;
 		</sql>
 		<rollback>
 		</rollback>
@@ -149,7 +155,7 @@
 		id="view-02112024" dbms="postgresql" runInTransaction="true"
 		context="local, test, homolog, production" runOnChange="true">
 		<createView viewName="v_tabela_juros_veiw">
-				select ROW_NUMBER() OVER (ORDER BY tj.nome) AS id,
+				select tabela_id as id,
 					  f.id as financeira_id,
 					  f.empresa_id,	
 					  tj.nome,
@@ -163,7 +169,7 @@
 					  tj.inativo
 				from tabela_juros tj
 					inner join financeira f on(f.id = tj.financeira_id) 
-				group by f.id, f.empresa_id, tj.nome,tj.minparc, tj.maxparc, tj.data_vigor, tj.valor_tac, tj.comentrada, tj.inativo 
+				group by tj.tabela_id, f.id, f.empresa_id, tj.nome,tj.minparc, tj.maxparc, tj.data_vigor, tj.valor_tac, tj.comentrada, tj.inativo 
 				order by tj.nome;			
 	    </createView>
 		<rollback>
