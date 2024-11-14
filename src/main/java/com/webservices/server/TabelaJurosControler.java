@@ -62,7 +62,7 @@ public class TabelaJurosControler extends TecControllerRest implements TabelaJur
 	var empresaId=dto.getEmpresaId();
 	var financeiraId=dto.getFinanceiraId();
 	TabelaJurosResponseDTO tabelaJuros = new TabelaJurosResponseDTO();
-	if(!this.tabelaJurosAsyncService.validaNome(empresaId, financeiraId, dto.getNome())) {
+	if(!this.tabelaJurosAsyncService.validaNome(empresaId, financeiraId, dto.getNome(),dto.getEdit())) {
 	    tabelaJuros = this.service.update(empresaId, financeiraId, tabelaId, dto);
 	}
 	return new ResponseEntity<>(converterTabelaJuros(tabelaJuros), HttpStatus.OK);

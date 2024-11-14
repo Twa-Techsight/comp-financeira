@@ -66,19 +66,21 @@ public class TabelaJurosAsyncServiceImpl extends SysAsyncService implements Tabe
     }
 
     @Override
-    public Boolean validaNome(Long empresaId, Long financeiraId, String nomeTabela) {
+    public Boolean validaNome(Long empresaId, Long financeiraId, String nomeTabela, Boolean onEdit) {
 	Boolean retornoValidacao = false;
 	var page = 1;
 	var size = 999;
-	final Map<String, SysCriterion> fields = new HashMap<>();
-	fields.put("empresaId", new SysCriterion("empresaId", Restrictions.eq("empresaId", empresaId)));
-	fields.put("financeiraId", new SysCriterion("financeiraId", Restrictions.eq("financeiraId", financeiraId)));
-	fields.put("nome", new SysCriterion("nome", Restrictions.eq("nome", nomeTabela)));
-	var payload = super.findPagePayload(TabelaJurosView.class, fields, page, size);
-	List<TabelaJurosView> tabelas = payload.getCollection();
-	if (tabelas.size() > 0) {
-	    var error = new ErrorClean(HttpStatus.BAD_REQUEST.value(),"Nome da TABELA DE JUROS 	já existe para esta FINANCEIRA!", "NOME_TABELA_INVALIDA");
-	    throw HttpException.error(error);
+	if(!onEdit) {
+	    final Map<String, SysCriterion> fields = new HashMap<>();
+	    fields.put("empresaId", new SysCriterion("empresaId", Restrictions.eq("empresaId", empresaId)));
+	    fields.put("financeiraId", new SysCriterion("financeiraId", Restrictions.eq("financeiraId", financeiraId)));
+	    fields.put("nome", new SysCriterion("nome", Restrictions.eq("nome", nomeTabela)));
+	    var payload = super.findPagePayload(TabelaJurosView.class, fields, page, size);
+	    List<TabelaJurosView> tabelas = payload.getCollection();
+	    if (tabelas.size() > 0) {
+		var error = new ErrorClean(HttpStatus.BAD_REQUEST.value(),"Nome da TABELA DE JUROS 	já existe para esta FINANCEIRA!", "NOME_TABELA_INVALIDA");
+		throw HttpException.error(error);
+	    }
 	}
 	return retornoValidacao;
     }
@@ -218,7 +220,7 @@ public class TabelaJurosAsyncServiceImpl extends SysAsyncService implements Tabe
 			.multiply(new BigDecimal(90));
 		itemTabela.setPrazo9(resolucaoCoeficiente(item.getParcela(), taxa));
 	    } else {
-		itemTabela.setPrazo8(BigDecimal.ZERO);
+		itemTabela.setPrazo9(BigDecimal.ZERO);
 	    }
 	    if (parametros.getOnlyDay10()) {
 		taxa = item.getTaxaJuro().divide(new BigDecimal(30), 8, RoundingMode.HALF_UP)

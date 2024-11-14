@@ -17,6 +17,6 @@ public interface TabelaJurosAsyncService extends SysInterfaceGenericAsync {
 
     public TabelaJurosResponseDTO getByTabelaId(Long empresaId, Long tabelaId);
 
-    public Boolean validaNome(Long empresaId, Long Financeiraid, String nomeTabela);
+    public Boolean validaNome(Long empresaId, Long financeiraId, String nomeTabela, Boolean onEdit);
 
 }

@@ -99,6 +99,7 @@ public class TabelaJurosControlerTest extends ContextWebApplicationJUnit {
 	return tabelaJuros;
     }
 
+    @SuppressWarnings("unused")
     private TabelaJurosRequestDTO criarEmpresaRequest() {
 	var tabelaJuros = new TabelaJurosRequestDTO();
 	tabelaJuros.setNome("Teste 01");
