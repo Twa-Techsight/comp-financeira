@@ -115,13 +115,13 @@ jobs:
           echo $(cat /home/runner/.m2/settings-security.xml)
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -Dmaven.test.skip=true -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog clean install  -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -Dmaven.test.skip=true -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog clean install  -Phomolog | awk '!/[0-9]+ kB/ && !/[0-9]+ MB/' || true
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DDB_HOST=$DB_HOST -DDB_PORT=$DB_PORT -DDB_NAME=$DB_NAME -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog liquibase:update -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DDB_HOST=$DB_HOST -DDB_PORT=$DB_PORT -DDB_NAME=$DB_NAME -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog liquibase:update -Phomolog | awk '!/[0-9]+ kB/ && !/[0-9]+ MB/' || true
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DactTransitively=false -Dspring.liquibase.contexts=homolog -DreResolve=false test -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DactTransitively=false -Dspring.liquibase.contexts=homolog -DreResolve=false test -Phomolog | awk '!/[0-9]+ kB/ && !/[0-9]+ MB/' || true
           echo "........................................"
           echo "........................................"
           echo $(du –h /opt)
