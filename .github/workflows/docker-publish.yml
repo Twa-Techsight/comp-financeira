@@ -17,8 +17,8 @@ env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   NEXUS_USER: ${{ secrets.NEXUS_USER }}
   NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-  COMPONENT_NAME_DIR: 'comp-indicador'
-  COMPONENT_NAME_DOCKER: 'comp_indicador'
+  COMPONENT_NAME_DIR: 'comp-financeira'
+  COMPONENT_NAME_DOCKER: 'comp_financeira'
 
 jobs:
   build:
@@ -60,13 +60,12 @@ jobs:
           path: /opt/maven-repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-           ${{ runner.os }}-maven- 
-
+           ${{ runner.os }}-maven-
+            
       - name: Get project version
         id: project_version
         run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-    
-      
+           
       - name: Docker Hub Image Check
         id: docker_hub_image_check
         run: |
@@ -86,7 +85,7 @@ jobs:
           echo "version: ${{ steps.project_version.outputs.VERSION }}"
           exit 1
           
-      - name: Build Indicador Jar
+      - name: Build Financeira Jar
         if: env.exists == 'false'
         working-directory: ./
         run: |
@@ -116,13 +115,13 @@ jobs:
           echo $(cat /home/runner/.m2/settings-security.xml)
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -Dmaven.test.skip=true -DactTransitively=false -DreResolve=false clean install  -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -Dmaven.test.skip=true -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog clean install  -Phomolog
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DDB_HOST=$DB_HOST -DDB_PORT=$DB_PORT -DDB_NAME=$DB_NAME -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -DactTransitively=false -DreResolve=false liquibase:update -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DDB_HOST=$DB_HOST -DDB_PORT=$DB_PORT -DDB_NAME=$DB_NAME -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -DactTransitively=false -DreResolve=false -Dspring.liquibase.contexts=homolog liquibase:update -Phomolog
           echo "........................................"
           echo "........................................"
-          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DactTransitively=false -DreResolve=false test -Phomolog
+          mvn -DNEXUS_USER=$NEXUS_USER -DNEXUS_PASSWORD=$NEXUS_PASSWORD -DactTransitively=false -Dspring.liquibase.contexts=homolog -DreResolve=false test -Phomolog
           echo "........................................"
           echo "........................................"
           echo $(du –h /opt)

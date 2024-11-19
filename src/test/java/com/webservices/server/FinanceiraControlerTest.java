@@ -108,7 +108,7 @@ public class FinanceiraControlerTest extends ContextWebApplicationJUnit {
     void deleteTest() {
 	var financeira = criarEmpresa();
 	when(financeiraRepository.deleteById(Mockito.eq(Financeira.class), Mockito.anyLong(),Mockito.anyMap())).thenReturn(financeira);
-	when(financeiraRepository.findOneById(Mockito.eq(Financeira.class), Mockito.anyLong(), Mockito.anyMap())).thenReturn(financeira);
+	when(financeiraRepository.findOneById(Mockito.eq(Financeira.class), Mockito.anyLong(), Mockito.eq(null))).thenReturn(financeira);
 	var response = controler.delete(1L);
 	assertNotNull(response);
 	assertEquals(1L, response.getBody().getData().getId());
