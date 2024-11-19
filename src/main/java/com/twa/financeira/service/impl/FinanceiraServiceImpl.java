@@ -59,7 +59,8 @@ public class FinanceiraServiceImpl extends SysGenericService implements Financei
 	return financeira;
     }
     
-   
+
+      
 
     @Override
     public Map<String, SysCriterion> definindoParametros(Long empresaId, FinanceiraParametroDTO parametersConsult) {

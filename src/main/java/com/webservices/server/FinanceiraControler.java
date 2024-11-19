@@ -69,9 +69,9 @@ public class FinanceiraControler extends TecControllerRest implements Financeira
     }
 
     @Override
-    public ResponseEntity<SysPayload<FinanceiraResponseDTO>> listByParam(Long grupoEmpresaId, Integer page, Integer size, String authorization, FinanceiraParametroDTO parametersConsult) {
-	var Financeiraes = financeiraAsyncService.findPagePayload(Financeira.class, grupoEmpresaId, parametersConsult, authorization, page, size);
-	var payload = converterFinanceiraes(Financeiraes.getCollection(), Financeiraes.getSize());
+    public ResponseEntity<SysPayload<FinanceiraResponseDTO>> listByParam(Long empresaId, Integer page, Integer size, String authorization, FinanceiraParametroDTO parametersConsult) {
+	var Financeiras = financeiraAsyncService.findPagePayload(Financeira.class, empresaId, parametersConsult, authorization, page, size);
+	var payload = converterFinanceiras(Financeiras.getCollection(), Financeiras.getSize());
 	return new ResponseEntity<>(payload, HttpStatus.OK);
     }    
         
@@ -81,11 +81,11 @@ public class FinanceiraControler extends TecControllerRest implements Financeira
         return new ResponseEntity<>(converterFinanceira(financeira), HttpStatus.OK);
     }
 
-    private SysPayload<FinanceiraResponseDTO> converterFinanceiraes(List<Financeira> financeiraes, Integer rows) {
+    private SysPayload<FinanceiraResponseDTO> converterFinanceiras(List<Financeira> financeiras, Integer rows) {
         var payload = newPayload();
         payload.setSize(rows);
 
-        var collection = financeiraes.stream().map(financeira -> getObjectMapper().convertValue(financeira, FinanceiraResponseDTO.class)).collect(Collectors.toList());
+        var collection = financeiras.stream().map(financeira -> getObjectMapper().convertValue(financeira, FinanceiraResponseDTO.class)).collect(Collectors.toList());
         payload.setCollection(collection);
 
         return payload;

@@ -54,52 +54,41 @@ public class FinanceiraAsyncServiceImpl extends SysAsyncService implements Finan
 
 	return (SysPayload<T>) payload;
     }
-    
-    
 
     @Override
-    public SysPayload<Financeira> findPagePayload(Class<Financeira> clazz, Long grupoEmpresaId, FinanceiraParametroDTO parametersConsult, String authorization, Integer page, Integer size) {
+    public SysPayload<Financeira> findPagePayload(Class<Financeira> clazz, Long empresaId,
+	    FinanceiraParametroDTO parametersConsult, String authorization, Integer page, Integer size) {
 	SysPayload<Financeira> payload;
 	if (usuarioTemAcessoAessaEmpresa(authorization)) {
-	    final Map<String, SysCriterion> fields = this.getService().definindoParametros(parametersConsult.getEmpresaId(), parametersConsult);
+	    final Map<String, SysCriterion> fields = this.getService().definindoParametros(empresaId, parametersConsult);
 	    fields.put("id", new SysCriterion("id", SortOrder.DESCENDING));
 
-	    fields.put("grupoEmpresaId",new SysCriterion("grupoEmpresaId", Restrictions.eq("grupoEmpresaId", grupoEmpresaId)));
+	    if (parametersConsult.getId() != null)
+		fields.put("id", new SysCriterion("id", Restrictions.eq("id", parametersConsult.getId())));
 
-	    if (parametersConsult.getId() != null )
-		fields.put("id", new SysCriterion("id",
-			Restrictions.eq("id", parametersConsult.getId())));
-
-	    if (parametersConsult.getEmpresaId() != null )
-		fields.put("empresaId", new SysCriterion("empresaId",
-			Restrictions.eq("empresaId", parametersConsult.getEmpresaId())));
-	    
-	    if (parametersConsult.getCpf() != null   && !parametersConsult.getCpf().isBlank())
-		fields.put("cpf",
-			new SysCriterion("cpf", Restrictions.eq("cpf", parametersConsult.getCpf())));
-
-	    if (parametersConsult.getEmail() != null    && !parametersConsult.getEmail().isBlank())
-		fields.put("email",
-			new SysCriterion("email", Restrictions.eq("email", parametersConsult.getEmail())));
-
-	    if (parametersConsult.getTelefoneCel() != null    && !parametersConsult.getTelefoneCel().isBlank())
-		fields.put("telefone",
-			new SysCriterion("telefoneCel", Restrictions.eq("telefoneCel", parametersConsult.getTelefoneCel())));
-
-
-	    if (parametersConsult.getInclusao() != null) {
-		fields.put("inclusao", new SysCriterion("inclusao",
-			Restrictions.eq("inclusao", parametersConsult.getInclusao())));
-	    }
-
-	    if (parametersConsult.getTipo() != null) {
-		fields.put("tipo", new SysCriterion("tipo",
-			Restrictions.eq("tipo", parametersConsult.getTipo())));
-	    }
+	    fields.put("empresaId", new SysCriterion("empresaId", Restrictions.eq("empresaId", empresaId)));
 
 	    if (parametersConsult.getNome() != null) {
 		fields.put("nome", new SysCriterion("nome",
 			Restrictions.ilike("nome", parametersConsult.getNome().toUpperCase(), MatchMode.ANYWHERE)));
+	    }
+
+	    if (parametersConsult.getAtendente() != null && !parametersConsult.getAtendente().isBlank())
+		fields.put("atendente",
+			new SysCriterion("", Restrictions.eq("atendente", parametersConsult.getAtendente())));
+
+	    if (parametersConsult.getFinaceiraPadrao() != null)
+		if (parametersConsult.getFinaceiraPadrao()) {
+		    fields.put("finaceiraPadrao",
+			    new SysCriterion("finaceiraPadrao", Restrictions.eq("finaceiraPadrao", true)));
+		} else {
+		    fields.put("finaceiraPadrao",
+			    new SysCriterion("finaceiraPadrao", Restrictions.eq("finaceiraPadrao", false)));
+		}
+
+	    if (parametersConsult.getSemJuros() != null) {
+		fields.put("semJuros",
+			new SysCriterion("semJuros", Restrictions.eq("semJuros", parametersConsult.getSemJuros())));
 	    }
 
 	    payload = super.findPagePayload(Financeira.class, fields, page, size);

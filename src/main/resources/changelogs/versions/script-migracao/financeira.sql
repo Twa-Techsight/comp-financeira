@@ -14,7 +14,8 @@ select 	f.id,
 	where e.status='ATIVA'	
 	order by id
 
-select 	tj.id,
+select 	tj.id as id,
+		tj.tabela_id as tabela_id,
 		e.id as empresa_id,
 		tj.financeira_id,
 		tj.codigo as nome,
@@ -35,10 +36,9 @@ select 	tj.id,
 		tj.prazo_9,
 		tj.prazo_10,
 		tj.prazo_11,
-		tj.prazo_12,
-		tj.comentrada 
+		tj.prazo_12
 	from tabelas_juros tj
 	inner join financeira f on(f.id = tj.financeira_id)
 	inner join empresa e on(e.id = f.empresa_id)
-	where e.status='ATIVA'	
-order by id
+	where e.status='ATIVA'	and tj.tabela_id is not null
+order by tj.tabela_id, tj.id

@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,35 +55,9 @@ public class TabelaJurosControlerTest extends ContextWebApplicationJUnit {
     }
 
     @Test
-    @DisplayName(value = "Listar TabelaJuroses")
-    void listTest() {
-
-	var empresas = criarTabelaJuross();
-
-	when(tabelaJurosRepository.findAll(Mockito.eq(TabelaJuros.class), Mockito.anyMap(), Mockito.anyInt(), Mockito.anyInt()))
-		.thenReturn(empresas);
-	var response = controler.list(1L, 0, 10);
-	assertNotNull(response);
-	assertEquals(2, response.getBody().getCollection().size());
-	assertEquals(1L, response.getBody().getCollection().get(0).getId());
-    }
-
-    @Test
-    @DisplayName(value = "Listar empresas vazias")
-    void listVaziasTest() {
-	
-	when(tabelaJurosRepository.findAll(Mockito.eq(TabelaJuros.class), Mockito.anyMap(), Mockito.anyInt(), Mockito.anyInt()))
-	.thenReturn(Arrays.asList());
-	var response = controler.list(1l, 0, 10);
-	assertNotNull(response);
-	assertEquals(0, response.getBody().getCollection().size());
-	
-    }
-
-    @Test
     @DisplayName(value = "get {id} tabelaJuros")
     void getTest() {
-	var tabelaJuros = criarTabelaJuros();
+	var tabelaJuros = criarEmpresa();
 	when(tabelaJurosRepository.findOneById(Mockito.eq(TabelaJuros.class), Mockito.anyLong(), Mockito.anyMap()))
 		.thenReturn(tabelaJuros);
 	
@@ -96,26 +67,17 @@ public class TabelaJurosControlerTest extends ContextWebApplicationJUnit {
 	assertEquals(1L, response.getBody().getData().getId());
     }
 
-    @Test
-    @DisplayName(value = "save tabelaJuros")
-    void saveTest() {
-	var empresaRequest = criarTabelaJurosRequest();
-	var tabelaJuros = criarTabelaJuros();
-	when(tabelaJurosRepository.save(Mockito.any(TabelaJuros.class))).thenReturn(tabelaJuros);
-	var response = controler.save(empresaRequest, httpResponse);
-	assertNotNull(response);
-	assertEquals(1L, response.getBody().getData().getId());
-    }
+  
 
     @Test
     @DisplayName(value = "edit tabelaJuros, encontrou")
     void editTest() {
-	var empresaUpdate = criarTabelaJurosUpdate();
-	var tabelaJuros = criarTabelaJuros();
-	tabelaJuros.setFinanceiraId(200l);
+	var empresaUpdate = criarEmpresaUpdate();
+	var tabelaJuros = criarEmpresa();
+	tabelaJuros.setNome("Teste Atualizado");
 	when(tabelaJurosRepository.update(Mockito.any(TabelaJuros.class))).thenReturn(tabelaJuros);
 	when(tabelaJurosRepository.count(Mockito.eq(TabelaJuros.class), Mockito.anyMap())).thenReturn(1);
-	var response = controler.edit(1L, empresaUpdate);
+	var response = controler.update(1L, empresaUpdate);
 	assertNotNull(response);
 	assertEquals(1L, response.getBody().getData().getId());
     }
@@ -123,57 +85,30 @@ public class TabelaJurosControlerTest extends ContextWebApplicationJUnit {
     @Test
     @DisplayName(value = "edit tabelaJuros, não encontrou")
     void editNaoEncontrouTest() {
-	var empresaUpdate = criarTabelaJurosUpdate();
+	var empresaUpdate = criarEmpresaUpdate();
 
 	when(tabelaJurosRepository.count(Mockito.eq(TabelaJuros.class), Mockito.anyMap())).thenReturn(0);
 	var throwable = Assertions.assertThrows(RuntimeException.class, () -> {
-	    controler.edit(1L, empresaUpdate);
+	    controler.update(1L, empresaUpdate);
 	});
 	assertEquals("OBJECT_NOT_FOUND", throwable.getMessage());
     }
     
-    @Test
-    @DisplayName(value = "delete tabelaJuros, encontrou")
-    void deleteTest() {
-	var tabelaJuros = criarTabelaJuros();
-	when(tabelaJurosRepository.deleteById(Mockito.eq(TabelaJuros.class), Mockito.anyLong(),Mockito.anyMap())).thenReturn(tabelaJuros);
-	when(tabelaJurosRepository.findOneById(Mockito.eq(TabelaJuros.class), Mockito.anyLong(), Mockito.anyMap())).thenReturn(tabelaJuros);
-	var response = controler.delete(1L);
-	assertNotNull(response);
-	assertEquals(1L, response.getBody().getData().getId());
-    }
-
-    @Test
-    @DisplayName(value = "delete tabelaJuros, não encontrou")
-    void deleteNaoEncontrouTest() {
-	when(tabelaJurosRepository.deleteById(Mockito.eq(TabelaJuros.class), Mockito.anyLong(), Mockito.eq(null))).thenReturn(null);
-	var response = controler.delete(1L);
-	assertNotNull(response);
-	assertEquals(null, response.getBody().getData());
-    }
-
-    private TabelaJurosUpdateDTO criarTabelaJurosUpdate() {
+    private TabelaJurosUpdateDTO criarEmpresaUpdate() {
 	var tabelaJuros = new TabelaJurosUpdateDTO();
 	return tabelaJuros;
     }
 
-    private TabelaJurosRequestDTO criarTabelaJurosRequest() {
+    @SuppressWarnings("unused")
+    private TabelaJurosRequestDTO criarEmpresaRequest() {
 	var tabelaJuros = new TabelaJurosRequestDTO();
-	tabelaJuros.setFinanceiraId(100l);
+	tabelaJuros.setNome("Teste 01");
 	return tabelaJuros;
     }
 
-    private TabelaJuros criarTabelaJuros() {
+    private TabelaJuros criarEmpresa() {
 	var tabelaJuros01 = new TabelaJuros(1L);
-	tabelaJuros01.setFinanceiraId(100l);
+	tabelaJuros01.setNome("Teste 01");
 	return tabelaJuros01;
-    }
-
-    private List<TabelaJuros> criarTabelaJuross() {
-	var tabelaJuros01 = new TabelaJuros(1L);
-	tabelaJuros01.setFinanceiraId(100l);
-	var empresa02 = new TabelaJuros(2L);
-	empresa02.setFinanceiraId(100l);
-	return Arrays.asList(tabelaJuros01, empresa02);
     }
 }

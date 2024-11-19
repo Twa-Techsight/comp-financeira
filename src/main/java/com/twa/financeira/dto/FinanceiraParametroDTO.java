@@ -1,10 +1,7 @@
 package com.twa.financeira.dto;
 
-import java.util.Date;
-
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.persistence.model.TecFilterParameter;
 
 import lombok.AllArgsConstructor;
@@ -25,27 +22,14 @@ public class FinanceiraParametroDTO extends TecFilterParameter {
 
     private Long empresaId;
 
-    private Long grupoEmpresaId;
-
     private String nome;
 
-    private String tipo;
+    private String atendente;
 
-    private String telefoneRes;
+    private Boolean finaceiraPadrao;
 
-    private String telefoneCom;
+    private Boolean semJuros;
 
-    private String telefoneCel;
-
-    private String email;
-    
-    private String cpf;
-    
-    private Date dataNascimento;
-    
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Sao_Paulo")
-    private Date inclusao;
-    
     private Boolean inativo;
     
 }
