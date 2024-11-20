@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.twa</groupId>
 	<artifactId>comp_financeira</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.4.0</version>
 	<name>comp_financeira</name>
 	<description>Twa componente comp-financeira</description>
 	<properties>
