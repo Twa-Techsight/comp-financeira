@@ -9,14 +9,14 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 
-@OpenAPIDefinition(info = @Info(title = "Indicador API", version = "v1", description = "Indicador API"))
+@OpenAPIDefinition(info = @Info(title = "Financeira API", version = "v1", description = "Financeira API"))
 @Configuration
 public class ConfigOpenApi {
 
     @Value("${spring.application.version}")
     private String version;
     
-    private static String title="TWA Sistemas - Indicador API";
+    private static String title="TWA Sistemas - Financeira API";
 
     @Bean
     public OpenAPI customOpenAPI() {
